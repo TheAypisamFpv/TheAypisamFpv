@@ -1,7 +1,7 @@
 
 <h1 align="center">🚀 I'm <a href="https://linktr.ee/the_aypisam_fpv" target="_blank">TheAypisamFpv</a>, computer science student at <a href="https://www.cesi.fr/" target="_blank">CESI</a> 🚀</h1>
 
-<h2 align="left">- 🔭 I’m currently working on a AI like <a href="https://en.wikipedia.org/wiki/Neuro-sama" target="_blank">Neuro-sama</a>.</h2>
+<h2 align="left">- 🔭 I’m currently working on an AI like <a href="https://en.wikipedia.org/wiki/Neuro-sama" target="_blank">Neuro-sama</a> and checking the viability of voice recognition using <a href="https://en.wikipedia.org/wiki/Spiking_neural_network" target="_blank">SNN</a>'s</h2>
 
 ---
 <h3 align="left">Languages and Tools:</h3>
@@ -10,7 +10,15 @@
   <a href="https://www.python.org" target="_blank" rel="noreferrer">
     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="50" height="50"/> 
   </a> 
-
+  
+  <a href="https://pytorch.org/" target="_blank" rel="noreferrer">
+    <img src="https://www.vectorlogo.zone/logos/pytorch/pytorch-icon.svg" alt="pytorch" width="40" height="40"/>
+  </a>
+  
+  <a href="https://www.tensorflow.org" target="_blank" rel="noreferrer">
+    <img src="https://www.vectorlogo.zone/logos/tensorflow/tensorflow-icon.svg" alt="tensorflow" width="40" height="40"/>
+  </a>
+  
   <a href="https://opencv.org/" target="_blank" rel="noreferrer">
     <img src="https://www.vectorlogo.zone/logos/opencv/opencv-icon.svg" alt="opencv" width="50" height="50"/> 
   </a> 
@@ -34,6 +42,14 @@
   <a href="https://www.sqlite.org/" target="_blank" rel="noreferrer">
     <img src="https://www.vectorlogo.zone/logos/sqlite/sqlite-icon.svg" alt="sqlite" width="50" height="50"/> 
   </a> 
+
+  <a href="https://git-scm.com/" target="_blank" rel="noreferrer">
+    <img src="https://www.vectorlogo.zone/logos/git-scm/git-scm-icon.svg" alt="git" width="40" height="40"/>
+  </a>
+  
+  <a href="https://www.linux.org/" target="_blank" rel="noreferrer">
+    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="40" height="40"/> 
+  </a>
   
 </p>
 
