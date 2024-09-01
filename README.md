@@ -2,7 +2,7 @@
 <h1 align="center">🚀 I'm <a href="https://theaypisamfpv.github.io/About/about.html" target="_blank">TheAypisamFpv</a>, computer science student at <a href="https://www.cesi.fr/" target="_blank">CESI</a> 🚀</h1>
 
 <h2 align="left">
-  <p>- 🔭 I’m currently working on an AI like <a href="https://en.wikipedia.org/wiki/Neuro-sama" target="_blank">Neuro-sama</a> and researching the feasibility of voice recognition using <a href="https://en.wikipedia.org/wiki/Spiking_neural_network" target="_blank">SNN</a>'s</p>
+<!--   <p>- 🔭 I’m currently working on an AI like <a href="https://en.wikipedia.org/wiki/Neuro-sama" target="_blank">Neuro-sama</a> and researching the feasibility of voice recognition using <a href="https://en.wikipedia.org/wiki/Spiking_neural_network" target="_blank">SNN</a>'s.</p> -->
   <p>- Rule 86: If it exists, you can play <a href="https://www.urbandictionary.com/define.php?term=Bad%20Apple%21%21" target="_blank">Bad Apple</a> on it.</p>
 </h2>
 
