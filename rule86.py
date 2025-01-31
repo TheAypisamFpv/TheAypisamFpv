@@ -25,7 +25,7 @@ githubSubPixels = [Image.open(path) for path in githubSubPixelsPaths]
 subPixelWidth = githubSubPixels[0].width
 subPixelHeight = githubSubPixels[0].height
 
-
+USESUBPIXELS = True
 
 # Load the video
 cap = cv2.VideoCapture(videoPath)
@@ -74,8 +74,13 @@ def getIntensities(frameQuad):
     
     return intensities
 
+pixelmate = np.zeros((pixelHeight, pixelWidth, 3), dtype=np.uint8)
 def getSubPixels(intensities: list):
-    pixelmate = np.zeros((pixelHeight, pixelWidth, 3), dtype=np.uint8)
+    
+
+    # if USESUBPIXELS is set to false, then all intensities are set to the mean value
+    if not USESUBPIXELS:
+        intensities = [int(np.mean(intensities))]*4
     
     for i, intensity in enumerate(intensities):
 
@@ -167,6 +172,35 @@ for i, frame in enumerate(frames):
     print(f"Processed GIF frame {i + 1}/{len(frames)}          ", end="\r")
 
 print("Processed GIF Done             \n")
+
+# Number of fade frames for a single pixel
+fadeFramesCount = 20
+
+# Create a random start frame for each pixel's fade-in
+fadeStartFrames = np.random.randint(0, fadeFramesCount, (gifHeight, gifWidth))
+
+# Create fade frames
+for fadeFrameIndex in range(1, fadeFramesCount + 10):
+    fadeImg = Image.new("RGB", (gifWidth * pixelWidth, gifHeight * pixelHeight))
+    for y in range(gifHeight):
+        for x in range(gifWidth):
+            pixel0 = githubPixels[0].convert("RGB")
+            finalPixel = imgFrames[-1].crop((x * pixelWidth, y * pixelHeight, (x + 1) * pixelWidth, (y + 1) * pixelHeight))
+            initialPixel = githubPixels[initialPixels[y, x]].convert("RGB")
+            
+            # Calculate the fade factor based on the pixel's start frame
+            if fadeFrameIndex >= fadeStartFrames[y, x]:
+                fadeFactor = (fadeFrameIndex - fadeStartFrames[y, x]) / fadeFramesCount
+                fadeFactor = min(fadeFactor, 1)  # Ensure fadeFactor does not exceed 1
+            else:
+                fadeFactor = 0
+            
+            blendedPixel = Image.blend(finalPixel, initialPixel, fadeFactor)
+            fadeImg.paste(blendedPixel, (x * pixelWidth, y * pixelHeight))
+    imgFrames.append(fadeImg)
+    print(f"Processed Fade frame {fadeFrameIndex}/{fadeFramesCount}          ", end="\r")
+
+print("Processed Fade Frames Done             \n")
 
 print("Saving GIF...", end="\r")
 
