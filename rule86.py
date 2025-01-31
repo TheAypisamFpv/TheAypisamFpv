@@ -115,7 +115,7 @@ def getSubPixels(intensities: list):
 
 
 # Generate the initial random commit pixels with a bias towards pixel0
-initialPixels = np.clip(np.random.normal(1, 1, (gifHeight, gifWidth)), 0, pixelNum-1).astype(int)
+initialPixels = np.clip(np.random.normal(0, 1.5, (gifHeight, gifWidth)), 0, pixelNum-1).astype(int)
 
 # Initialize pixelReplaced array
 pixelReplaced = np.zeros((gifHeight, gifWidth), dtype=int)
