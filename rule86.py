@@ -9,7 +9,7 @@ outputGif = "Bad Apple.gif"  # Name of the generated GIF
 
 gifHeight = 7  # commit pixel
 gifWidth = 52  # commit pixel
-frameSkip = 2  # Number of frames to skip to speed up animation
+frameSkip = 1  # Number of frames to skip to speed up animation
 
 # GitHub pixels paths
 githubPixelsPaths = ["pixels/pixel0.png", "pixels/pixel1.png", "pixels/pixel2.png", "pixels/pixel3.png", "pixels/pixel4.png"]
