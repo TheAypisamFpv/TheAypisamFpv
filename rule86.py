@@ -64,7 +64,7 @@ print("Processing Video Done             \n")
 # Create the GIF
 imgFrames = []
 for i, frame in enumerate(frames):
-    img = Image.new("RGB", (width * pixelWidth, height * pixelHeight), (0, 0, 0))
+    img = Image.new("RGBA", (width * pixelWidth, height * pixelHeight), (0, 0, 0, 0))  # Create RGBA image with transparent background
     
     # Calculate the starting x position to center the video frame
     startX = (width - newWidth) // 2
@@ -81,8 +81,8 @@ for i, frame in enumerate(frames):
             else:
                 videoIntensity = initialPixels[y, x]
                 
-            pixelImg = githubPixels[videoIntensity]  # Corresponding pixel image
-            img.paste(pixelImg, (x * pixelWidth, y * pixelHeight))
+            pixelImg = githubPixels[videoIntensity].convert("RGBA")  # Convert pixel image to RGBA
+            img.paste(pixelImg, (x * pixelWidth, y * pixelHeight), pixelImg)  # Use pixelImg as mask to preserve transparency
     
     imgFrames.append(img)
     print(f"Processed GIF frame {i + 1}/{len(frames)}          ", end="\r")
@@ -95,7 +95,7 @@ print("Saving GIF...", end="\r")
 duration = 1000 / (videoFps / frameSkip)  # 1 second / (frames per second / frameSkip)
 
 imgFrames[0].save(
-    outputGif, save_all=True, append_images=imgFrames[1:], loop=0, duration=duration
+    outputGif, save_all=True, append_images=imgFrames[1:], loop=0, duration=duration, transparency=0
 )
 
 print(f"Saving GIF Done - {outputGif}")
