@@ -60,3 +60,6 @@
 
 
 <p align="left"> <img src="https://komarev.com/ghpvc/?username=theaypisamfpv&label=Profile%20views&color=0e75b6&style=flat" alt="theaypisamfpv" /> </p>
+
+#### contributions in the last year
+![Bad Apple](https://github.com/TheAypisamFpv/TheAypisamFpv/blob/main/Bad%20Apple.gif)
