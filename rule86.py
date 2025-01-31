@@ -6,8 +6,9 @@ from PIL import Image
 # Parameters
 videoPath = "Bad Apple.mp4"  # Path to the input video
 outputGif = "Bad Apple.gif"  # Name of the generated GIF
-gifHeight = 7  # Height of the GitHub heatmap (7 pixels)
-gifWidth = 52  # Max width (number of weeks visible on GitHub)
+
+gifHeight = 7  # commit pixel
+gifWidth = 52  # commit pixel
 frameSkip = 2  # Number of frames to skip to speed up animation
 
 # GitHub pixels paths
@@ -49,7 +50,7 @@ while cap.isOpened():
     
     # Normalize pixels
     normalizedFrame = np.clip(frame / 255 * pixelNum-1, 0, pixelNum-1)
-    normalizedResizedFrame = cv2.resize(normalizedFrame, (scaledFrameWidth, scaledFrameHeight), interpolation=cv2.INTER_LINEAR)
+    normalizedResizedFrame = cv2.resize(normalizedFrame, (scaledFrameWidth, scaledFrameHeight), interpolation=cv2.INTER_AREA)
     
     frames.append(normalizedResizedFrame)
     
@@ -73,10 +74,13 @@ def getIntensities(frameQuad):
     
     return intensities
 
-def getSubPixels(intensities):
+def getSubPixels(intensities: list):
     pixelmate = np.zeros((pixelHeight, pixelWidth, 3), dtype=np.uint8)
     
     for i, intensity in enumerate(intensities):
+
+        intensity = min(intensity, pixelNum-1)
+        
         subPixelImg = githubSubPixels[intensity].convert("RGB")
         subPixelImg = subPixelImg.resize((subPixelWidth, subPixelHeight))
         # print(intensity, i)
@@ -139,59 +143,25 @@ for i, frame in enumerate(frames):
                 frameQuad = frame[frameY:frameY+2, frameX:frameX+2]
                 intensities = getIntensities(frameQuad)
 
-                pixelIntensity = np.max(intensities)
+                pixelIntensity = np.mean(intensities)
                 # if the framePixel is brighter than the initialPixel or it has aloready been replaced, then use the framePixel
                 if pixelIntensity >= initialPixels[gifFrameY, gifFrameX] or pixelReplaced[gifFrameY, gifFrameX]:
-                    pixelReplaced[gifFrameY, gifFrameX] = 1
-
-                    pixelImg = getSubPixels(intensities)
-                    pixelImg = Image.fromarray(pixelImg)
-
-                    pastePos = (gifFrameX * pixelWidth, gifFrameY * pixelHeight)
-                    img.paste(pixelImg, pastePos)
-                # else:
-                #     # else, then use the initialPixel
-            else:
-                # If the pixel is outside the video frame, use initialPixels
-                if not pixelReplaced[gifFrameY, gifFrameX]:
+                    pixelReplaced[gifFrameY, gifFrameX] = 1 
+                                       
+                elif not pixelReplaced[gifFrameY, gifFrameX]:
+                    # else, then use the initialPixel
                     intensities = [initialPixels[gifFrameY, gifFrameX]]*4
-                    pixelImg = getSubPixels(intensities)
-                    pixelImg = Image.fromarray(pixelImg)
-                    pastePos = (gifFrameX * pixelWidth, gifFrameY * pixelHeight)
-                    img.paste(pixelImg, pastePos)
+                    
+            elif not pixelReplaced[gifFrameY, gifFrameX]:
+                # If the pixel is outside the video frame, use initialPixels
+                    intensities = [initialPixels[gifFrameY, gifFrameX]]*4
+
+
+            pixelImg = getSubPixels(intensities)
+            pixelImg = Image.fromarray(pixelImg)
+            pastePos = (gifFrameX * pixelWidth, gifFrameY * pixelHeight)
+            img.paste(pixelImg, pastePos)
     
-    # for y in range(0, scaledFrameHeight, scale):
-    #     for x in range(0, scaledFrameWidth, scale):
-    #         frameQuad = frame[y:y+2, x:x+2]
-    #         if frameQuad.shape[0] < 2 or frameQuad.shape[1] < 2:
-    #             continue
-
-    #         intensities = getIntensities(frameQuad)
-            
-    #         scaledX = x // scale
-    #         scaledY = y // scale
-            
-    #         if baStartX <= scaledX < baStartX + scaledFrameWidth // scale:
-    #             pixelIntensity = np.max(intensities)  
-    #             if pixelIntensity >= initialPixels[scaledY, scaledX] and not pixelReplaced[scaledY, scaledX]:
-    #                 initialPixels[scaledY, scaledX] = pixelIntensity  # Replace with video intensity if brighter
-    #                 pixelReplaced[scaledY, scaledX] = 1  # Mark pixel as replaced
-                
-    #             elif not pixelReplaced[scaledY, scaledX]:
-    #                 intensities = [initialPixels[scaledY, scaledX]] * 4
-            
-    #         # if the pixel is on the left or right side (outside the video frame) of the video frame, use 0
-    #         # elif x == baStartX - 1 or x == baStartX + newWidth:
-    #         #     intensities = [0, 0, 0, 0]
-    #         # else:
-    #         #     intensities = [initialPixels[scaledY, scaledX]]*4
-
-    #         pixelImg = getSubPixels(intensities)
-    #         pixelImg = Image.fromarray(pixelImg)
-            
-    #         # Calculate the position to paste the subpixel
-    #         pastePos = (baStartX + x * subPixelWidth, y * subPixelHeight)
-    #         img.paste(pixelImg, pastePos)
     
     imgFrames.append(img)
     print(f"Processed GIF frame {i + 1}/{len(frames)}          ", end="\r")
