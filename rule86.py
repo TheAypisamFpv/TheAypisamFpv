@@ -1,15 +1,14 @@
-from math import ceil
 import cv2
 import numpy as np
 from PIL import Image
+
 
 # Parameters
 videoPath = "Bad Apple.mp4"  # Path to the input video
 outputGif = "Bad Apple.gif"  # Name of the generated GIF
 
-gifHeight = 7  # commit pixel
-gifWidth = 52  # commit pixel
-frameSkip = 1  # Number of frames to skip to speed up animation
+GIFHEIGHT = 7  # commit pixel
+GIFWIDTH = 52  # commit pixel
 
 # GitHub pixels paths
 githubPixelsPaths = ["pixels/pixel0.png", "pixels/pixel1.png", "pixels/pixel2.png", "pixels/pixel3.png", "pixels/pixel4.png"]
@@ -28,42 +27,76 @@ subPixelHeight = githubSubPixels[0].height
 USESUBPIXELS = True
 
 # Load the video
+print("Loading Video...", end=" ")
 cap = cv2.VideoCapture(videoPath)
 frames = []
 frameCount = 0
+print("Done")
 
 videoLenght = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 videoFps = cap.get(cv2.CAP_PROP_FPS)
+videoTime = videoLenght / videoFps
+
+print(f"""
+Video Info:
+  - Frame Count: {videoLenght}
+  - Frame Rate: {videoFps}fps
+  - Frame Time: {1/videoFps}s
+  - Video Time: {videoTime}s
+""")
+
+targetFuration = 40
+FRAMESKIP = targetFuration * (videoFps / 1000)
+if FRAMESKIP < 1:
+    print("Warning: Frame Skip is less than 1, setting it to 1")
+    FRAMESKIP = 1
+
+print(f"Target Frame Time: {targetFuration}ms")
+print(f"Calculated Frame Skip: {FRAMESKIP}\n")
 
 print("Processing Video...", end="\r")
+accumulator = 0.0
 while cap.isOpened():
     ret, frame = cap.read()
     if not ret:
         break
-    
-    # Resize the frame while maintaining aspect ratio
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # Convert to grayscale
+
+    # Convert to grayscale & resize while maintaining aspect ratio
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     aspectRatio = frame.shape[1] / frame.shape[0]
     scale = 2
-    scaledFrameWidth = int(gifHeight * aspectRatio) * scale
-    scaledFrameHeight = gifHeight * scale
-    
-    # Normalize pixels
-    normalizedFrame = np.clip(frame / 255 * pixelNum-1, 0, pixelNum-1)
-    normalizedResizedFrame = cv2.resize(normalizedFrame, (scaledFrameWidth, scaledFrameHeight), interpolation=cv2.INTER_AREA)
-    
-    frames.append(normalizedResizedFrame)
-    
-    frameCount += 1
-    if frameCount % frameSkip != 0:
-        frames.pop()
+    scaledFrameWidth = int(GIFHEIGHT * aspectRatio) * scale
+    scaledFrameHeight = GIFHEIGHT * scale
 
-    print(f"Processed Video frame {frameCount + 1}/{videoLenght}          ", end="\r")
+    # Normalize pixels
+    normalizedFrame = np.clip(frame / 255 * (pixelNum - 1), 0, pixelNum - 1)
+    normalizedResizedFrame = cv2.resize(
+        normalizedFrame, (scaledFrameWidth, scaledFrameHeight), interpolation=cv2.INTER_AREA
+    )
+
+    frameCount += 1
+    accumulator += 1
+    if accumulator >= FRAMESKIP:
+        accumulator -= FRAMESKIP
+        frames.append(normalizedResizedFrame)
+
+    print(f"Processed Video frame {frameCount}/{videoLenght}          ", end="\r")
 
 cap.release()
 
-print("Processing Video Done             \n")
+print("Processing Video Done             ")
 
+
+print(f"""
+GIF Info:
+  - Frame Count: {len(frames)}
+  - Frame Rate: {1000 / targetFuration}fps
+  - Frame Time: {targetFuration/1000}s
+  - Total Time: {len(frames) * targetFuration / 1000}s
+""")
+
+input("Press Enter to continue...")
+print()
 
 def getIntensities(frameQuad):
     intensities = []
@@ -120,27 +153,27 @@ def getSubPixels(intensities: list):
 
 
 # Generate the initial random commit pixels with a bias towards pixel0
-initialPixels = np.clip(np.random.normal(0, 1.5, (gifHeight, gifWidth)), 0, pixelNum-1).astype(int)
+initialPixels = np.clip(np.random.normal(0, 1.5, (GIFHEIGHT, GIFWIDTH)), 0, pixelNum-1).astype(int)
 
 # Initialize pixelReplaced array
-pixelReplaced = np.zeros((gifHeight, gifWidth), dtype=int)
+pixelReplaced = np.zeros((GIFHEIGHT, GIFWIDTH), dtype=int)
 
 # Create the GIF
 imgFrames = []
 for i, frame in enumerate(frames):
     # Create a new image filled with pixel0
     pixel0 = githubPixels[0].convert("RGB")
-    img = Image.new("RGB", (gifWidth * pixelWidth, gifHeight * pixelHeight))
-    for y in range(gifHeight):
-        for x in range(gifWidth):
+    img = Image.new("RGB", (GIFWIDTH * pixelWidth, GIFHEIGHT * pixelHeight))
+    for y in range(GIFHEIGHT):
+        for x in range(GIFWIDTH):
             img.paste(pixel0, (x * pixelWidth, y * pixelHeight))
 
     # Calculate the starting x position to center the video frame
-    baStartX = (gifWidth - scaledFrameWidth // scale) // 2
+    baStartX = (GIFWIDTH - scaledFrameWidth // scale) // 2
 
 
-    for gifFrameY in range(gifHeight):
-        for gifFrameX in range(gifWidth):
+    for gifFrameY in range(GIFHEIGHT):
+        for gifFrameX in range(GIFWIDTH):
             frameY = gifFrameY * scale
             frameX = (gifFrameX - baStartX) * scale
 
@@ -173,17 +206,18 @@ for i, frame in enumerate(frames):
 
 print("Processed GIF Done             \n")
 
+
 # Number of fade frames for a single pixel
 fadeFramesCount = 20
 
 # Create a random start frame for each pixel's fade-in
-fadeStartFrames = np.random.randint(0, fadeFramesCount, (gifHeight, gifWidth))
+fadeStartFrames = np.random.randint(0, fadeFramesCount, (GIFHEIGHT, GIFWIDTH))
 
 # Create fade frames
 for fadeFrameIndex in range(1, fadeFramesCount + 10):
-    fadeImg = Image.new("RGB", (gifWidth * pixelWidth, gifHeight * pixelHeight))
-    for y in range(gifHeight):
-        for x in range(gifWidth):
+    fadeImg = Image.new("RGB", (GIFWIDTH * pixelWidth, GIFHEIGHT * pixelHeight))
+    for y in range(GIFHEIGHT):
+        for x in range(GIFWIDTH):
             pixel0 = githubPixels[0].convert("RGB")
             finalPixel = imgFrames[-1].crop((x * pixelWidth, y * pixelHeight, (x + 1) * pixelWidth, (y + 1) * pixelHeight))
             initialPixel = githubPixels[initialPixels[y, x]].convert("RGB")
@@ -202,13 +236,16 @@ for fadeFrameIndex in range(1, fadeFramesCount + 10):
 
 print("Processed Fade Frames Done             \n")
 
-print("Saving GIF...", end="\r")
 
-# calculate the duration of the gif using the video frame rate, and the number of frames skipped
-duration = 1000 / (videoFps / frameSkip)  # 1 second / (frames per second / frameSkip)
+print(f"""
+Frame duration: {targetFuration}ms
+Total frames: {len(imgFrames)}
+Total time: {len(imgFrames) * targetFuration / 1000}s (higher than the video time due to fade frames)
+""")
 
+print("Saving GIF...", end=" ")
 imgFrames[0].save(
-    outputGif, save_all=True, append_images=imgFrames[1:], loop=0, duration=duration
+    outputGif, save_all=True, append_images=imgFrames[1:], loop=0, duration=targetFuration
 )
 
-print(f"Saving GIF Done - {outputGif}")
+print(f"Done - {outputGif}")
