@@ -1,5 +1,5 @@
 
-<h1 align="center">🚀 I'm <a href="https://theaypisamfpv.github.io/About/about.html" target="_blank">TheAypisamFpv</a>, computer science and AI student at <a href="https://www.cesi.fr/" target="_blank">CESI</a> 🚀</h1>
+<h1 align="center">🍎 I'm <a href="https://theaypisamfpv.github.io/About/about.html" target="_blank">TheAypisamFpv</a>, computer science and AI student at <a href="https://www.cesi.fr/" target="_blank">CESI</a></h1>
 
 <h2 align="left">
 <!--   <p>- 🔭 I’m currently working on an AI like <a href="https://en.wikipedia.org/wiki/Neuro-sama" target="_blank">Neuro-sama</a> and researching the feasibility of voice recognition using <a href="https://en.wikipedia.org/wiki/Spiking_neural_network" target="_blank">SNN</a>'s.</p> -->
@@ -12,7 +12,7 @@
 <p align="left"> 
   
   <a>
-    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/> 
+    <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" alt="python" width="40" height="40"/>
   </a> 
   
   <a>
@@ -54,7 +54,6 @@
   <a>
     <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/linux/linux-original.svg" alt="linux" width="40" height="40"/> 
   </a>
-  
 </p>
 
 
