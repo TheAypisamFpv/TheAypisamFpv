@@ -4,11 +4,12 @@ from PIL import Image
 
 
 # Parameters
-videoPath = "Bad Apple.mp4"  # Path to the input video
-outputGif = "Bad Apple.gif"  # Name of the generated GIF
+VIDEOPATH = "Bad Apple.mp4"  # Path to the input video
+OUTPUTGIF = "Bad Apple.gif"  # Name of the generated GIF
 
 GIFHEIGHT = 7  # commit pixel
 GIFWIDTH = 52  # commit pixel
+FRAME_SKIP = 1 # Frame skip multiplier (min 1)
 
 # GitHub pixels paths
 githubPixelsPaths = ["pixels/pixel0.png", "pixels/pixel1.png", "pixels/pixel2.png", "pixels/pixel3.png", "pixels/pixel4.png"]
@@ -27,8 +28,8 @@ subPixelHeight = githubSubPixels[0].height
 USESUBPIXELS = True
 
 # Load the video
-print("Loading Video...", end=" ")
-cap = cv2.VideoCapture(videoPath)
+print(f"Loading Video `{VIDEOPATH}`...", end=" ")
+cap = cv2.VideoCapture(VIDEOPATH)
 frames = []
 frameCount = 0
 print("Done")
@@ -45,14 +46,18 @@ Video Info:
   - Video Time: {videoTime}s
 """)
 
-targetFuration = 40
-FRAMESKIP = targetFuration * (videoFps / 1000)
+targetDuration = 40
+FRAMESKIP = targetDuration * (videoFps / 1000)
+targetDuration = round(targetDuration*FRAME_SKIP, 5)
+FRAMESKIP = round(FRAMESKIP*FRAME_SKIP, 5)# multiplied by itself so that you can set a frameSkip manually, but the correct one will be calculated(default 1 -> no skip)
 if FRAMESKIP < 1:
     print("Warning: Frame Skip is less than 1, setting it to 1")
     FRAMESKIP = 1
 
-print(f"Target Frame Time: {targetFuration}ms")
-print(f"Calculated Frame Skip: {FRAMESKIP}\n")
+print(f"""Frame Skip: {FRAME_SKIP}
+Calculated Frame Time: {targetDuration}ms
+Calculated Frame Skip: {FRAMESKIP}
+""")
 
 print("Processing Video...", end="\r")
 accumulator = 0.0
@@ -90,13 +95,11 @@ print("Processing Video Done             ")
 print(f"""
 GIF Info:
   - Frame Count: {len(frames)}
-  - Frame Rate: {1000 / targetFuration}fps
-  - Frame Time: {targetFuration/1000}s
-  - Total Time: {len(frames) * targetFuration / 1000}s
+  - Frame Rate: {1000 / targetDuration}fps
+  - Frame Time: {targetDuration/1000}s
+  - Total Time: {len(frames) * targetDuration / 1000}s
 """)
 
-input("Press Enter to continue...")
-print()
 
 def getIntensities(frameQuad):
     intensities = []
@@ -238,14 +241,15 @@ print("Processed Fade Frames Done             \n")
 
 
 print(f"""
-Frame duration: {targetFuration}ms
+Frame duration: {targetDuration}ms
 Total frames: {len(imgFrames)}
-Total time: {len(imgFrames) * targetFuration / 1000}s (higher than the video time due to fade frames)
-""")
+Total time: {len(imgFrames) * targetDuration / 1000}s (higher than the video time due to fade frames)
 
-print("Saving GIF...", end=" ")
+Saving GIF as `{OUTPUTGIF}`...""", end=" ")
+# don't asky why it's here, if it's it's own print it doesn't print before the gif is saved
+
 imgFrames[0].save(
-    outputGif, save_all=True, append_images=imgFrames[1:], loop=0, duration=targetFuration
+    OUTPUTGIF, save_all=True, append_images=imgFrames[1:], loop=0, duration=targetDuration
 )
 
-print(f"Done - {outputGif}")
+print(f"Done\n")
